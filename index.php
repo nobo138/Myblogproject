@@ -35,7 +35,9 @@
             <i class="fa fa-user-circle"></i>
          </span>
          <!--   user name Input-->
-         <input class="form-input" id="user" type="text" placeholder="Username" name="username" required>
+         <input class="form-input" id="username" type="text" placeholder="Username" name="username" 
+         pattern="^([a-zA-Z0-9]([._-](?![._-])|[a-zA-Z0-9]){1,18}[a-zA-Z0-9])$"
+          required>
          
          <br>
          
@@ -45,15 +47,21 @@
             <i class="fa fa-key"></i>
          </span>
          <!--   Password Input-->
-         <input class="form-input" type="password" placeholder="Password" id="pwd" name="password" required>
+         <input class="form-input" type="password" placeholder="Password" id="password" name="password" 
+         pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[.!@#$%^&*_=+-]).{8,}$" 
+         required>
          
          <br><br>
    <!--      Remember me  -->
-         <input type="checkbox" name="remember"> Remember me <br><br>
+         <input type="checkbox" name="remember"> Remember me <br>
 
          <?php
             if (isset($_SESSION['message'])){
-               echo $_SESSION['message'];
+               $Color = "gray";
+               $Text = $_SESSION['message'];
+
+               echo '<div style="Color:'.$Color.'">'.$Text.'</div>';
+               
             }
             unset($_SESSION['message']);
          ?>
@@ -68,7 +76,7 @@
    <!--      Forgot Password button-->
          <button class="btn submits frgt-pass">Forgot Password?</button>
    <!--     Sign Up button -->
-         <button onclick="javascript:location.href='http://localhost:9090/myblogproject/Signup.html'" class="btn submits sign-up">Sign Up 
+         <button onclick="javascript:location.href='http://localhost:9090/myblogproject/Signup.php'" class="btn submits sign-up">Sign Up 
    <!--         Sign Up font icon -->
          <i class="fa fa-user-plus" aria-hidden="true"></i>
          </button>

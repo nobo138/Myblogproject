@@ -1,9 +1,13 @@
+<?php 
+    session_start();
+?>
+
 <!DOCTYPE html>
 <html>
     <head>
         <title>User Signup</title>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-        <script>
+        <!-- <script>
         $(document).ready(function() {
             var name = $("#name").val();
             var email = $("#email").val();
@@ -22,7 +26,7 @@
             });
             return false;
         });
-        </script>
+        </script> -->
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     </head>
     <body>
@@ -47,14 +51,14 @@
                         <div class="wrapper-2">
                             <div class="form-title">Sign Up Today!</div>
                             <div class="form">
-                                <form id="signup" action="Submit_Form.php" method="POST">
+                                <form id="signup" method="POST" action="submit_form.php">
                                     <head>
                                         <link rel="stylesheet" type="text/css" href="Signup.css">
                                     </head>
                                     <p class="content-item">
                                         <label>
                                             Username
-                                            <input type="text" placeholder="Lorem ipsum" name="name" pattern="^([a-zA-Z0-9]([._-](?![._-])|[a-zA-Z0-9]){1,18}[a-zA-Z0-9])$"
+                                            <input type="text" placeholder="Lorem ipsum" name="username" pattern="^([a-zA-Z0-9]([._-](?![._-])|[a-zA-Z0-9]){1,18}[a-zA-Z0-9])$"
                                             title="Username only have upper-case, lower-case and special character:._- " required>
                                         </label>
                                     </p>
@@ -71,13 +75,23 @@
                                     <p class="content-item">
                                         <label>
                                             password
-                                            <input type="password" placeholder="*****" name="password" pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[.!@#$%^&*_=+-]).{8,12}$" 
+                                            <input type="password" placeholder="*****" name="password" pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[.!@#$%^&*_=+-]).{8,}$" 
                                              title="Password must be from 8 to 12 characters, includes upper-case, lower-case, number and special characters:!@#$%^&*_=+-" required>
                                         </label>
                                     </p>
+                                    <br>
+                                    <?php
+                                        if (isset($_SESSION['message'])){
+                                            $Color = "gray";
+                                            $Text = $_SESSION['message'];
 
+                                            echo '<div style="Color:'.$Color.'">'.$Text.'</div>';
+                                        }
+                                        unset($_SESSION['message']);
+                                    ?>
+                                    <br>
 
-                                    <button type="submit" class="signup">Sign Up </button>
+                                    <button name="signup" type="submit" class="signup">Sign Up </button>
                     
                                     <p class="content-item">
                                         <div id="server-results"></div>

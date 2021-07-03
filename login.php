@@ -21,25 +21,40 @@
 
 		$username=$_POST['username'];
 		$password=$_POST['password'];
-
-		$query=mysqli_query($conn,"select * from users where username='$username' && password='$password'");
+		$sanitized_username = mysqli_real_escape_string($conn, $username);
+      	$sanitized_password = mysqli_real_escape_string($conn, $password);
+		$query=mysqli_query($conn,"select * from users where username='$sanitized_username'");
 	
 		if (mysqli_num_rows($query) == 0){
 			$_SESSION['message']="Login Failed. User not Found!";
+				
 			header('location:index.php');
 		}
 		else {
-			$row=mysqli_fetch_array($query);
-			
-			//set up cookie
-			if (isset($_POST['remember'])){
-				//set up cookie 
-				setcookie("cookie", random_str(), time() + (86400 * 30));
-			}
+				$row=mysqli_fetch_array($query);
+				$hashed_password= $row["password"];
+				//echo ($hashed_password);
+				
+				if(password_verify($password,$hashed_password))
+				{
+					
+					
+					//set up cookie
+					if (isset($_POST['remember'])){
+						//set up cookie 
+						setcookie("cookie", random_str(), time() + (86400 * 30));
+					}
 
-			$_SESSION['iduser']=$row['iduser'];
-			$_SESSION['username']=$row['username'];
-			header('location:blog.php');
+					$_SESSION['iduser']=$row['iduser'];
+					$_SESSION['username']=$row['username'];
+					header('location:blog.php');
+				}
+				else{
+
+					$_SESSION['message']="Login Failed. Password was wrong!";
+					//echo ($hashed_password);
+					header('location:index.php');
+				}
 		}
 	}
 	else{
@@ -47,7 +62,7 @@
 
 			$cookie=$_COOKIE['cookie'];
 
-			$query=mysqli_query($conn,"select * from user where cookie='$cookie'");
+			$query=mysqli_query($conn,"select * from users where cookie='$cookie'");
 			$row=mysqli_fetch_array($query);
 
 			$_SESSION['iduser']=$row['iduser'];

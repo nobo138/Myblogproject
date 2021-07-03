@@ -1,40 +1,42 @@
-<?php
-	session_start();
+<?php	
 	//Change these configs according to your MySQL server
-	$servername = "localhost";
-	$username = "root";
-	$password = "1234";
-	$database = "myblog"; 		 
-	$table = "users";
-
+	session_start();
+	include('conn.php');
 	// Create connection
-	$conn = mysqli_connect($servername, $username, $password, $database);
 	#mysqli_set_charset('utf8', $conn);
 		// Check connection
-		if ($conn->connect_error) {
-			$_SESSION['msg'] = "Connection failed";
-		    //die("Connection failed: " . $conn->connect_error);
-		}
-		else{
-			if ($_SERVER["REQUEST_METHOD"] == "POST") {
+	if (isset($_POST['signup'])){ 
 			// 2 ways to get fields in form, the later is more secure
-			$name = $_POST['name'];
+		$name = $_POST['username'];
+		$sanitized_name = mysqli_real_escape_string($conn, $name);
+      
+		
+		$query=mysqli_query($conn,"select * from users where username='".$sanitized_name."'");
+
+		if (mysqli_num_rows($query) > 0){
+			$_SESSION['message']="Signup failed. Username existed!";	
+			header('location:Signup.php');
+		}	
+		else {
+			$name = $_POST['username'];
 			$email = $_POST['email'];
 			$password = $_POST['password'];
-			$hashed_password = password_hash($password, PASSWORD_DEFAULT);
-			echo ($hashed_password);
-			}
-			// $name = mysqli_real_escape_string($conn, $_POST['name']);
+			$sanitized_password = mysqli_real_escape_string($conn, $password);
+			$sanitized_email = mysqli_real_escape_string($conn, $email);
+			$hashed_password = password_hash($sanitized_password, PASSWORD_DEFAULT);
 			
 			//Create SQL command to insert data to database
-			$sql_command = "INSERT INTO $table (username, password,email, cookie) VALUES ('$name','$hashed_password','$email',null)";
+			$sql_command = "INSERT INTO users (username, password,email) VALUES ('$sanitized_name','$hashed_password','$sanitized_email')";
 
-			if ($conn->query($sql_command) === TRUE)
-				// $_SESSION['msg'] = "New record created successfully";
-				header("location: Blog.php");
+			if ($conn->query($sql_command) === TRUE){
+				header('location:index.php');
+			}
 			else
-				$_SESSION['msg'] = $conn->error;
-
-			mysqli_close($conn);
+			{
+				$_SESSION['message']="Signup failed. Try again!";
+				header('location:Signup.php');
+			}
 		}
+	}
+	mysqli_close($conn);
 ?>

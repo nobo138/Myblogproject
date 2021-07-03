@@ -48,7 +48,7 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>
-          <a class="navbar-brand" href="index.html">Simple Blog</a>
+          <a class="navbar-brand" href="Blog.php">Simple Blog</a>
         </div>
         <!-- Collect the nav links, forms, and other content for toggling -->
         <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
@@ -57,10 +57,10 @@
               <a href="about.html">About</a>
             </li>
             <li>
-              <a href="login.html">Login</a>
+              <a href="login.html">Profile</a>
             </li>
             <li>
-              <a href="signup.html">Sign up</a>
+              <a href="index.php">Log out</a>
             </li>
           </ul>
         </div>
@@ -134,8 +134,6 @@
             }
           ?>
 
-
-
           <!-- Blog Comments -->
 
           <!-- Comments Form -->
@@ -150,59 +148,7 @@
           </div>
 
           <hr>
-          <?php
-        // Create connection
-            $conn = mysqli_connect($servername, $username, $password, $database);
-            // Check connection
-            if ($conn->connect_error) {
-              //$_SESSION['msg'] = "Connection failed";
-                //die("Connection failed: " . $conn->connect_error);
-                    echo "connection failed!";
-            }
-            else{
-              $id = $_GET['id'];
-                  
-              $sql_command = "SELECT * FROM posts WHERE idpost='".$id."'";
-            
-              $result = mysqli_query($conn, $sql_command);
-
-              if (mysqli_num_rows($result) > 0) {
-                        // output data of each row
-                        while($row = mysqli_fetch_assoc($result)) {
-                          $title = $row["title"];
-                          $username = $row["username"];
-                          $timepost = $row["timepost"];
-                          $content = $row["content"];
-                          $timepost = $row["timepost"];
-                          $image = $row["image"];
-
-                          echo '<h1 class="post-title">'.$title.'</h1>
-
-                          <!-- Author -->
-                          <p class="lead">
-                            by '.$username.'
-                          </p>
-                
-                          <hr>
-                
-                          <!-- Date/Time -->
-                          <p><span class="glyphicon glyphicon-time"></span>'.$timepost.' </p>
-                
-                          <hr>
-                
-                          <!-- Post Content -->
-                          <p>'.$content.'</p>
-                          
-                
-                          <hr>';
-                        }
-                    } else {
-                        echo "0 results";
-                    }
-
-              mysqli_close($conn);
-            }
-          ?>
+          
           <!-- Posted Comments -->
 
           <!-- Comment -->

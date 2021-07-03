@@ -121,10 +121,11 @@
             else{             
               if(isset($_GET['search']))
               {
-                echo ($_GET['search']);
+                
                 $search = $_GET['search'];
-                $sql_command = "SELECT * FROM $table WHERE (title like '%$search%' or content like '%$search%')"; 
-                echo $sql_command;            
+                $sanitized_search = mysqli_real_escape_string($conn, $search);
+                $sql_command = "SELECT * FROM $table WHERE (title like '%$sanitized_search%' or content like '%$sanitized_search%')"; 
+                            
                 $result = mysqli_query($conn, $sql_command);
                 if (mysqli_num_rows($result) > 0) {
                           // output data of each row
@@ -150,13 +151,13 @@
                             <hr>';
                         }
                     } else {
-                        echo "0 results";
+                        echo "No results";
                     }
                     mysqli_close($conn);
               }
               else{
                 $sql_command = "SELECT * FROM posts";
-                echo ("fail");
+                
                 $result = mysqli_query($conn, $sql_command);
                 if (mysqli_num_rows($result) > 0) {
                           // output data of each row
@@ -182,7 +183,7 @@
                             <hr>';
                           }
                       } else {
-                          echo "0 results";
+                          echo "No results";
                       }
   
                 mysqli_close($conn);

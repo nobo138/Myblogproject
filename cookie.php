@@ -6,8 +6,11 @@
 	
 		$username=$_POST['username'];
 		$password=$_POST['password'];
+		
+		$sanitized_username = mysqli_real_escape_string($conn, $username);
+      	$sanitized_password = mysqli_real_escape_string($conn, $password);
 	
-		$query=mysqli_query($conn,"select * from users where username='$username' && password='$password'");
+		$query=mysqli_query($conn,"select * from users where username='$sanitized_username' && password='$sanitized_password'");
 	
 		if (mysqli_num_rows($query) == 0){
 			$_SESSION['message']="Login Failed. User not Found!";
