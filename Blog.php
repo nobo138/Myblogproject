@@ -1,11 +1,7 @@
 <?php 
-    //session_start();
+    session_start();
     //Change these configs according to your MySQL server
-    $servername = "localhost";
-    $username = "root";
-    $password = "1234";
-    $database = "myblog";
-    $table = "posts";
+    include("conn.php");
 
     // if (!isset($_SESSION['id']) ||(trim ($_SESSION['id']) == '')) {
     //   header('index.php');
@@ -111,7 +107,7 @@
           <?php
 
           // Create connection
-            $conn = mysqli_connect($servername, $username, $password, $database);
+            include('conn.php');
             // Check connection
             if ($conn->connect_error) {
               //$_SESSION['msg'] = "Connection failed";
@@ -130,13 +126,12 @@
                 if (mysqli_num_rows($result) > 0) {
                           // output data of each row
                           while($row = mysqli_fetch_assoc($result)) {
-                            $id = $row["idpost"];
+                            $id = $row["postid"];
                             $title = $row["title"];
                             $username = $row["username"];
                             $timepost = $row["timepost"];
                             $content = $row["content"];
                             $timepost = $row["timepost"];
-                            $image = $row["image"];
 
                             echo '<!-- First Blog Post -->
                             <h2 class="post-title">
@@ -147,7 +142,7 @@
                             </p>
                             <p><span class="glyphicon glyphicon-time"></span>'.$timepost.'</p>
                             <p>'.$content.'</p>
-                            <a class="btn btn-default" href="http://localhost:9090/myblogproject/readmorepost.php?id='.$id.'">Read More</a>
+                            <a class="btn btn-default" href="http://'.$_SERVER['HTTP_HOST'].'/profile.php?id='.$id.'">Read More</a>
                             <hr>';
                         }
                     } else {
@@ -162,13 +157,13 @@
                 if (mysqli_num_rows($result) > 0) {
                           // output data of each row
                           while($row = mysqli_fetch_assoc($result)) {
-                            $id = $row["idpost"];
+                            $id = $row["postid"];
                             $title = $row["title"];
                             $username = $row["username"];
                             $timepost = $row["timepost"];
                             $content = $row["content"];
                             $timepost = $row["timepost"];
-                            $image = $row["image"];
+                           
   
                             echo '<!-- First Blog Post -->
                             <h2 class="post-title">

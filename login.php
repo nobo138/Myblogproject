@@ -45,7 +45,7 @@
 						setcookie("cookie", random_str(), time() + (86400 * 30));
 					}
 
-					$_SESSION['iduser']=$row['iduser'];
+					$_SESSION['userid']=$row['userid'];
 					$_SESSION['username']=$row['username'];
 					header('location:blog.php');
 				}
@@ -65,7 +65,7 @@
 			$query=mysqli_query($conn,"select * from users where cookie='$cookie'");
 			$row=mysqli_fetch_array($query);
 
-			$_SESSION['iduser']=$row['iduser'];
+			$_SESSION['userid']=$row['userid'];
 			$_SESSION['username']=$row['username'];
 			header('location:blog.php');
 		} else {

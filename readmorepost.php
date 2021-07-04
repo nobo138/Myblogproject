@@ -1,10 +1,24 @@
-
 <?php
-    $servername = "localhost";
-    $username = "root";
-    $password = "1234";
-    $database = "myblog";
-    $table = "posts";
+    function random_str(
+      int $length = 64,
+      string $keyspace = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
+    ): string {
+      if ($length < 1) {
+          throw new \RangeException("Length must be a positive integer");
+      }
+      $pieces = [];
+      $max = mb_strlen($keyspace, '8bit') - 1;
+      for ($i = 0; $i < $length; ++$i) {
+          $pieces []= $keyspace[random_int(0, $max)];
+      }
+      return implode('', $pieces);
+    }
+
+    session_start();
+    include('conn.php');
+    $_SESSION['token'] = random_str(24);
+    $userid = $_SESSION['userid'];
+    
 ?>
 
 <!DOCTYPE html>
@@ -48,19 +62,16 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>
-          <a class="navbar-brand" href="Blog.php">Simple Blog</a>
+          <a class="navbar-brand" href="index.html">Simple Blog</a>
         </div>
         <!-- Collect the nav links, forms, and other content for toggling -->
         <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
           <ul class="nav navbar-nav navbar-right">
             <li>
-              <a href="about.html">About</a>
+              <a href="about.html"><?php echo $_SESSION['username'] ?></a>
             </li>
             <li>
-              <a href="login.html">Profile</a>
-            </li>
-            <li>
-              <a href="index.php">Log out</a>
+              <a href="index.php">Logout</a>
             </li>
           </ul>
         </div>
@@ -82,113 +93,130 @@
           <!-- Title -->
         <?php
         // Create connection
-            $conn = mysqli_connect($servername, $username, $password, $database);
-            // Check connection
-            if ($conn->connect_error) {
-              //$_SESSION['msg'] = "Connection failed";
-                //die("Connection failed: " . $conn->connect_error);
-                    echo "connection failed!";
+          include('conn.php');
+
+          #$idpost = $_GET['id'];
+          # $_SESSION['postid'] = $idpost;
+          $idpost = $_SESSION['id'];
+              
+          $sql = "SELECT * FROM posts WHERE postid='".$idpost."'";
+        
+          $result = mysqli_query($conn, $sql);
+
+          if (mysqli_num_rows($result) > 0) {
+            // output data of each row
+            while($row = mysqli_fetch_assoc($result)) {
+              $title = $row["title"];
+              $username = $row["username"];
+              $timepost = $row["timepost"];
+              $content = $row["content"];
+
+              echo '<h1 class="post-title">'.$title.'</h1>
+
+              <!-- Author -->
+              <p class="lead">
+                by '.$username.'
+              </p>
+    
+              <hr>
+    
+              <!-- Date/Time -->
+              <p><span class="glyphicon glyphicon-time"></span>'.$timepost.' </p>
+    
+              <hr>
+    
+              <!-- Post Content -->
+              <p>'.$content.'</p>
+              
+    
+              <hr>';
             }
-            else{
-              $id = $_GET['id'];
-                  
-              $sql_command = "SELECT * FROM posts WHERE idpost='".$id."'";
-            
-              $result = mysqli_query($conn, $sql_command);
 
-              if (mysqli_num_rows($result) > 0) {
-                        // output data of each row
-                        while($row = mysqli_fetch_assoc($result)) {
-                          $title = $row["title"];
-                          $username = $row["username"];
-                          $timepost = $row["timepost"];
-                          $content = $row["content"];
-                          $timepost = $row["timepost"];
-                          $image = $row["image"];
+          } else {
+            echo "0 results";
+          }
 
-                          echo '<h1 class="post-title">'.$title.'</h1>
+          mysqli_close($conn);
+        ?>
 
-                          <!-- Author -->
-                          <p class="lead">
-                            by '.$username.'
-                          </p>
-                
-                          <hr>
-                
-                          <!-- Date/Time -->
-                          <p><span class="glyphicon glyphicon-time"></span>'.$timepost.' </p>
-                
-                          <hr>
-                
-                          <!-- Post Content -->
-                          <p>'.$content.'</p>
-                          
-                
-                          <hr>';
-                        }
-                    } else {
-                        echo "0 results";
-                    }
 
-              mysqli_close($conn);
-            }
-          ?>
 
           <!-- Blog Comments -->
 
           <!-- Comments Form -->
           <div class="well">
             <h4>Leave a Comment:</h4>
-            <form role="form">
+            <form role="form" method="POST" action="comment.php">
               <div class="form-group">
-                <textarea class="form-control" rows="3"></textarea>
+                <textarea class="form-control" rows="3" name="comment"></textarea>
+                <input type="hidden" name="token" value="<?php echo $_SESSION['token'] ?>" />
+                <input type="hidden" name="id" value="<?php echo $userid ?>" />
               </div>
-              <button type="submit" class="btn btn-primary">Submit</button>
+              <button type="submit" class="btn btn-primary" name="post">Submit</button>
             </form>
           </div>
 
           <hr>
+          <?php
+
+            include('conn.php');
+
+            $idpost = $_GET['id'];
+            $_SESSION['postid'] = $idpost;
+                
+            $sql = "SELECT * FROM comments WHERE postid='".$idpost."'";
           
-          <!-- Posted Comments -->
+            $result = mysqli_query($conn, $sql);
 
-          <!-- Comment -->
-          <div class="media">
-            <a class="pull-left" href="#">
-              <img class="media-object" src="http://placehold.it/64x64" alt="">
-            </a>
-            <div class="media-body">
-              <h4 class="media-heading">Start Bootstrap
-                <small>August 25, 2014 at 9:30 PM</small>
-              </h4>
-              Cras sit amet nibh libero, in gravida nulla. Nulla vel metus scelerisque ante sollicitudin commodo. Cras purus odio, vestibulum in vulputate at, tempus viverra turpis. Fusce condimentum nunc ac nisi vulputate fringilla. Donec lacinia congue felis in faucibus.
-            </div>
-          </div>
+            if (mysqli_num_rows($result) > 0) {
+              // output data of each row
+              while($row = mysqli_fetch_assoc($result)) {
+                $idpost = $row["postid"];
+                $idcomment = $row["commentid"];
+                $username = $row["username"];
+                $content = $row["contentcmt"];
+                $time = $row["timecmt"];
 
-          <!-- Comment -->
-          <div class="media">
-            <a class="pull-left" href="#">
-              <img class="media-object" src="http://placehold.it/64x64" alt="">
-            </a>
-            <div class="media-body">
-              <h4 class="media-heading">Start Bootstrap
-                <small>August 25, 2014 at 9:30 PM</small>
-              </h4>
-              Cras sit amet nibh libero, in gravida nulla. Nulla vel metus scelerisque ante sollicitudin commodo. Cras purus odio, vestibulum in vulputate at, tempus viverra turpis. Fusce condimentum nunc ac nisi vulputate fringilla. Donec lacinia congue felis in faucibus.
-              <!-- Nested Comment -->
-              <div class="media">
-                <a class="pull-left" href="#">
-                  <img class="media-object" src="http://placehold.it/64x64" alt="">
-                </a>
-                <div class="media-body">
-                  <h4 class="media-heading">Nested Start Bootstrap
-                    <small>August 25, 2014 at 9:30 PM</small>
-                  </h4>
-                  Cras sit amet nibh libero, in gravida nulla. Nulla vel metus scelerisque ante sollicitudin commodo. Cras purus odio, vestibulum in vulputate at, tempus viverra turpis. Fusce condimentum nunc ac nisi vulputate fringilla. Donec lacinia congue felis in faucibus.
-                </div>
-              </div>
-              <!-- End Nested Comment -->
-            </div>
-          </div>
+                $content = str_replace("%27","'",$content);
+                $content = str_replace('%22','"',$content);
+
+                echo '<div class="media">
+                  <a class="pull-left" href="#">
+                    <img class="media-object" src="http://placehold.it/64x64" alt="">
+                  </a>
+                  <div class="media-body">
+                    <h4 class="media-heading">'.$username.'
+                      <small>'.$time.'</small>
+                      <small><a href="#" onclick="delCmt('.$idcomment.')">Delete</a></small>
+                    </h4>
+                    '.$content.'
+                    <form id="'.$idcomment.'" type="hidden" method="POST" action="del_cmt.php">
+                      <input type="hidden" name="idcomment" value="'.$idcomment.'" />
+                      <input type="hidden" name="id" value="'.$userid.'" />
+                      <input type="hidden" name="token" value="'.$_SESSION['token'].'" />
+                    </form>
+                  </div>
+                </div>';
+                if (isset($_SESSION['message'])){
+                    echo $_SESSION['message'];
+                }
+                unset($_SESSION['message']);'
+                <hr>';
+
+              }
+
+            } else {
+              echo "No comment.";
+            }
+
+            mysqli_close($conn);
+          ?>
+
+          <script>
+            function delCmt(id) {
+                document.getElementById(id).submit();
+            }
+          </script>
 
         </div>
       </div>
