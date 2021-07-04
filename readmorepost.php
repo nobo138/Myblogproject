@@ -95,9 +95,9 @@
         // Create connection
           include('conn.php');
 
-          #$idpost = $_GET['id'];
-          # $_SESSION['postid'] = $idpost;
-          $idpost = $_SESSION['id'];
+          $idpost = $_GET['id'];
+          $_SESSION['postid'] = $idpost;
+          #$idpost = $_SESSION['id'];
               
           $sql = "SELECT * FROM posts WHERE postid='".$idpost."'";
         
